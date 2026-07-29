@@ -11,6 +11,7 @@ import {
 import { NavLink } from "react-router";
 
 import NoveraLogo from "../brand/NoveraLogo";
+import WorkspaceSwitcher from "../workspace/WorkspaceSwitcher";
 import { cn } from "../../utils/cn";
 
 const navigation = [
@@ -53,43 +54,24 @@ export default function Sidebar({ open, onClose }) {
           </button>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.06] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300">
-            Workspace
-          </p>
-          <p className="mt-2 text-sm font-semibold text-white">Abuja Operations</p>
-          <p className="mt-1 text-xs text-slate-500">Field operations command centre</p>
-        </div>
+        <div className="mt-8"><WorkspaceSwitcher /></div>
 
         <nav className="novera-scrollbar mt-6 flex-1 overflow-y-auto">
-          <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">
-            Operations
-          </p>
+          <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Operations</p>
           <div className="space-y-1">
             {navigation.map(({ label, to, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
                 onClick={onClose}
-                className={({ isActive }) =>
-                  cn(
-                    "group flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition",
-                    isActive
-                      ? "bg-emerald-400/10 text-emerald-200"
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white",
-                  )
-                }
+                className={({ isActive }) => cn(
+                  "group flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition",
+                  isActive ? "bg-emerald-400/10 text-emerald-200" : "text-slate-400 hover:bg-slate-900 hover:text-white",
+                )}
               >
                 {({ isActive }) => (
                   <>
-                    <Icon
-                      className={cn(
-                        "h-4.5 w-4.5 transition",
-                        isActive
-                          ? "text-emerald-300"
-                          : "text-slate-500 group-hover:text-slate-300",
-                      )}
-                    />
+                    <Icon className={cn("h-4.5 w-4.5 transition", isActive ? "text-emerald-300" : "text-slate-500 group-hover:text-slate-300")} />
                     <span>{label}</span>
                   </>
                 )}
@@ -102,17 +84,12 @@ export default function Sidebar({ open, onClose }) {
           <NavLink
             to="/settings"
             onClick={onClose}
-            className={({ isActive }) =>
-              cn(
-                "flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition",
-                isActive
-                  ? "bg-emerald-400/10 text-emerald-200"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white",
-              )
-            }
+            className={({ isActive }) => cn(
+              "flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition",
+              isActive ? "bg-emerald-400/10 text-emerald-200" : "text-slate-400 hover:bg-slate-900 hover:text-white",
+            )}
           >
-            <Settings className="h-4.5 w-4.5" />
-            Settings
+            <Settings className="h-4.5 w-4.5" /> Settings
           </NavLink>
         </div>
       </aside>

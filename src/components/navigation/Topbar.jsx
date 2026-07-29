@@ -1,18 +1,66 @@
-import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
+﻿import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 
 import useAuth from "../../hooks/useAuth";
 
-const titles = {
-  "/dashboard": "Dashboard",
-  "/jobs": "Jobs",
-  "/customers": "Customers",
-  "/teams": "Teams",
-  "/equipment": "Equipment",
-  "/inventory": "Inventory",
-  "/settings": "Settings",
-};
+function getTitle(pathname) {
+  if (pathname.startsWith("/jobs/") && pathname.endsWith("/edit")) {
+    return "Edit job";
+  }
+
+  if (pathname === "/jobs/new") {
+    return "Create job";
+  }
+
+  if (pathname.startsWith("/jobs/")) {
+    return "Job details";
+  }
+
+  if (pathname === "/customers/new") {
+    return "Create customer";
+  }
+
+  if (
+    pathname.startsWith("/customers/") &&
+    pathname.includes("/sites/") &&
+    pathname.endsWith("/edit")
+  ) {
+    return "Edit site";
+  }
+
+  if (
+    pathname.startsWith("/customers/") &&
+    pathname.endsWith("/sites/new")
+  ) {
+    return "Create site";
+  }
+
+  if (
+    pathname.startsWith("/customers/") &&
+    pathname.endsWith("/edit")
+  ) {
+    return "Edit customer";
+  }
+
+  if (pathname.startsWith("/customers/")) {
+    return "Customer details";
+  }
+
+  if (pathname === "/workspace/setup") {
+    return "Workspace setup";
+  }
+
+  return {
+    "/dashboard": "Dashboard",
+    "/jobs": "Jobs",
+    "/customers": "Customers",
+    "/teams": "Teams",
+    "/equipment": "Equipment",
+    "/inventory": "Inventory",
+    "/settings": "Settings",
+  }[pathname] || "Novera";
+}
 
 function getInitials(user) {
   const initials = [user?.first_name, user?.last_name]
@@ -33,17 +81,24 @@ export default function Topbar({ onMenuClick }) {
 
   useEffect(() => {
     function handlePointerDown(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
         setMenuOpen(false);
       }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
   }, []);
 
   async function handleLogout() {
     setLoggingOut(true);
+
     try {
       await logout();
     } finally {
@@ -51,7 +106,9 @@ export default function Topbar({ onMenuClick }) {
     }
   }
 
-  const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(" ");
+  const fullName = [user?.first_name, user?.last_name]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl">
@@ -65,14 +122,10 @@ export default function Topbar({ onMenuClick }) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="min-w-0">
-            <p className="truncate text-base font-semibold text-white">
-              {titles[location.pathname] || "Novera"}
-            </p>
-            <p className="hidden truncate text-xs text-slate-500 sm:block">
-              Abuja operational workspace
-            </p>
-          </div>
+
+          <p className="truncate text-base font-semibold text-white">
+            {getTitle(location.pathname)}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -82,7 +135,6 @@ export default function Topbar({ onMenuClick }) {
             aria-label="Notifications"
           >
             <Bell className="h-4.5 w-4.5" />
-            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-emerald-300" />
           </button>
 
           <div ref={menuRef} className="relative">
@@ -96,14 +148,17 @@ export default function Topbar({ onMenuClick }) {
               <span className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-400/15 text-xs font-bold text-emerald-200">
                 {getInitials(user)}
               </span>
+
               <span className="hidden max-w-36 sm:block">
                 <span className="block truncate text-xs font-semibold text-slate-100">
                   {fullName || "Novera user"}
                 </span>
+
                 <span className="block truncate text-[10px] text-slate-500">
                   {user?.email || "Authenticated"}
                 </span>
               </span>
+
               <ChevronDown className="h-4 w-4 text-slate-500" />
             </button>
 
@@ -112,20 +167,15 @@ export default function Topbar({ onMenuClick }) {
                 role="menu"
                 className="absolute right-0 mt-2 w-60 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl shadow-black/30"
               >
-                <div className="border-b border-slate-800 px-3 py-3 sm:hidden">
-                  <p className="truncate text-sm font-semibold text-white">
-                    {fullName || "Novera user"}
-                  </p>
-                  <p className="mt-1 truncate text-xs text-slate-500">{user?.email}</p>
-                </div>
                 <button
                   type="button"
                   role="menuitem"
                   onClick={handleLogout}
                   disabled={loggingOut}
-                  className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-60"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-60"
                 >
                   <LogOut className="h-4 w-4" />
+
                   {loggingOut ? "Signing out…" : "Sign out"}
                 </button>
               </div>
