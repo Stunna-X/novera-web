@@ -15,10 +15,18 @@ import EditCustomerPage from "./pages/customers/EditCustomerPage";
 import EditCustomerSitePage from "./pages/customers/EditCustomerSitePage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ModulePage from "./pages/dashboard/ModulePage";
+import AssetDetailsPage from "./pages/equipment/AssetDetailsPage";
+import CreateAssetPage from "./pages/equipment/CreateAssetPage";
+import EditAssetPage from "./pages/equipment/EditAssetPage";
+import EquipmentPage from "./pages/equipment/EquipmentPage";
 import CreateJobPage from "./pages/jobs/CreateJobPage";
 import EditJobPage from "./pages/jobs/EditJobPage";
 import JobDetailsPage from "./pages/jobs/JobDetailsPage";
 import JobsPage from "./pages/jobs/JobsPage";
+import CreateTeamMemberPage from "./pages/teams/CreateTeamMemberPage";
+import EditTeamMemberPage from "./pages/teams/EditTeamMemberPage";
+import TeamMemberDetailsPage from "./pages/teams/TeamMemberDetailsPage";
+import TeamsPage from "./pages/teams/TeamsPage";
 import WorkspaceSettingsPage from "./pages/workspace/WorkspaceSettingsPage";
 import WorkspaceSetupPage from "./pages/workspace/WorkspaceSetupPage";
 
@@ -49,8 +57,14 @@ export default function App() {
             <Route path="/customers/:customerId/edit" element={<EditCustomerPage />} />
             <Route path="/customers/:customerId/sites/new" element={<CreateCustomerSitePage />} />
             <Route path="/customers/:customerId/sites/:siteId/edit" element={<EditCustomerSitePage />} />
-            <Route path="/teams" element={<ModulePage eyebrow="Workforce" title="Teams" description="Manage field crews, assignments, availability, roles, and permissions." />} />
-            <Route path="/equipment" element={<ModulePage eyebrow="Assets" title="Equipment" description="Track operational assets, availability, maintenance state, and job allocation." />} />
+            <Route path="/teams" element={<TeamsPage />} />
+            <Route path="/teams/new" element={<CreateTeamMemberPage />} />
+            <Route path="/teams/:profileId" element={<TeamMemberDetailsPage />} />
+            <Route path="/teams/:profileId/edit" element={<EditTeamMemberPage />} />
+            <Route path="/equipment" element={<EquipmentPage />} />
+            <Route path="/equipment/new" element={<CreateAssetPage />} />
+            <Route path="/equipment/:assetId" element={<AssetDetailsPage />} />
+            <Route path="/equipment/:assetId/edit" element={<EditAssetPage />} />
             <Route path="/inventory" element={<ModulePage eyebrow="Materials" title="Inventory" description="Monitor stock, movements, reorder levels, and field consumption." />} />
             <Route path="/settings" element={<WorkspaceSettingsPage />} />
           </Route>

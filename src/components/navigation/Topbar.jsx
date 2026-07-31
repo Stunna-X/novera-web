@@ -1,4 +1,4 @@
-﻿import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 
@@ -9,17 +9,9 @@ function getTitle(pathname) {
     return "Edit job";
   }
 
-  if (pathname === "/jobs/new") {
-    return "Create job";
-  }
-
-  if (pathname.startsWith("/jobs/")) {
-    return "Job details";
-  }
-
-  if (pathname === "/customers/new") {
-    return "Create customer";
-  }
+  if (pathname === "/jobs/new") return "Create job";
+  if (pathname.startsWith("/jobs/")) return "Job details";
+  if (pathname === "/customers/new") return "Create customer";
 
   if (
     pathname.startsWith("/customers/") &&
@@ -29,27 +21,30 @@ function getTitle(pathname) {
     return "Edit site";
   }
 
-  if (
-    pathname.startsWith("/customers/") &&
-    pathname.endsWith("/sites/new")
-  ) {
+  if (pathname.startsWith("/customers/") && pathname.endsWith("/sites/new")) {
     return "Create site";
   }
 
-  if (
-    pathname.startsWith("/customers/") &&
-    pathname.endsWith("/edit")
-  ) {
+  if (pathname.startsWith("/customers/") && pathname.endsWith("/edit")) {
     return "Edit customer";
   }
 
-  if (pathname.startsWith("/customers/")) {
-    return "Customer details";
+  if (pathname.startsWith("/customers/")) return "Customer details";
+  if (pathname === "/teams/new") return "Add team member";
+
+  if (pathname.startsWith("/teams/") && pathname.endsWith("/edit")) {
+    return "Edit team member";
   }
 
-  if (pathname === "/workspace/setup") {
-    return "Workspace setup";
+  if (pathname.startsWith("/teams/")) return "Team member";
+  if (pathname === "/equipment/new") return "Register equipment";
+
+  if (pathname.startsWith("/equipment/") && pathname.endsWith("/edit")) {
+    return "Edit equipment";
   }
+
+  if (pathname.startsWith("/equipment/")) return "Equipment details";
+  if (pathname === "/workspace/setup") return "Workspace setup";
 
   return {
     "/dashboard": "Dashboard",
@@ -81,24 +76,17 @@ export default function Topbar({ onMenuClick }) {
 
   useEffect(() => {
     function handlePointerDown(event) {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
     }
 
     document.addEventListener("pointerdown", handlePointerDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-    };
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
 
   async function handleLogout() {
     setLoggingOut(true);
-
     try {
       await logout();
     } finally {
@@ -153,7 +141,6 @@ export default function Topbar({ onMenuClick }) {
                 <span className="block truncate text-xs font-semibold text-slate-100">
                   {fullName || "Novera user"}
                 </span>
-
                 <span className="block truncate text-[10px] text-slate-500">
                   {user?.email || "Authenticated"}
                 </span>
@@ -175,7 +162,6 @@ export default function Topbar({ onMenuClick }) {
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white disabled:opacity-60"
                 >
                   <LogOut className="h-4 w-4" />
-
                   {loggingOut ? "Signing out…" : "Sign out"}
                 </button>
               </div>

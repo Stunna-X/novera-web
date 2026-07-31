@@ -1,0 +1,212 @@
+import {
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  UserRoundCheck,
+  UserRoundPlus,
+  UsersRound,
+} from "lucide-react";
+import { useDeferredValue, useEffect, useState } from "react";
+import { Link } from "react-router";
+
+import AccessDenied from "../../components/feedback/AccessDenied";
+import TeamFilters from "../../components/teams/TeamFilters";
+import TeamTable from "../../components/teams/TeamTable";
+import TeamsEmptyState from "../../components/teams/TeamsEmptyState";
+import Alert from "../../components/ui/Alert";
+import WorkspaceEmptyState from "../../components/workspace/WorkspaceEmptyState";
+import useTeamDashboard from "../../hooks/useTeamDashboard";
+import useWorkforce from "../../hooks/useWorkforce";
+import useWorkspace from "../../hooks/useWorkspace";
+import { getApiErrorMessage } from "../../utils/api-errors";
+
+const defaultFilters = {
+  search: "",
+  status: "",
+  availableOnly: false,
+  includeInactive: false,
+};
+
+function MetricCard({ icon: Icon, label, value, note }) {
+  return (
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/55 p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs text-slate-500">{label}</p>
+          <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+          <p className="mt-2 text-xs text-slate-600">{note}</p>
+        </div>
+        <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400/10 text-emerald-300">
+          <Icon className="h-4.5 w-4.5" />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export default function TeamsPage() {
+  const {
+    activeOrganizationId,
+    activeOrganizationDisplayName,
+    isLoading: workspaceLoading,
+    hasPermission,
+  } = useWorkspace();
+  const [filters, setFilters] = useState(defaultFilters);
+  const [page, setPage] = useState(1);
+  const deferredSearch = useDeferredValue(filters.search);
+  const pageSize = 20;
+  const canRead = hasPermission("workforce.read");
+  const canCreate = hasPermission("workforce.create");
+  const canReadDashboard = hasPermission("work_orders.read");
+
+  useEffect(() => setPage(1), [
+    deferredSearch,
+    filters.availableOnly,
+    filters.includeInactive,
+    filters.status,
+  ]);
+
+  const { items, total, loading, error, reload } = useWorkforce({
+    organizationId: activeOrganizationId,
+    skip: (page - 1) * pageSize,
+    limit: pageSize,
+    search: deferredSearch,
+    status: filters.status,
+    availableOnly: filters.availableOnly,
+    includeInactive: filters.includeInactive || filters.status === "inactive",
+    enabled: Boolean(activeOrganizationId && canRead),
+  });
+
+  const { dashboard, loading: dashboardLoading, reload: reloadDashboard } =
+    useTeamDashboard({
+      organizationId: activeOrganizationId,
+      enabled: Boolean(activeOrganizationId && canReadDashboard),
+    });
+
+  function refreshAll() {
+    reload();
+    if (canReadDashboard) reloadDashboard();
+  }
+
+  if (workspaceLoading) {
+    return <div className="h-96 animate-pulse rounded-3xl bg-slate-900/60" />;
+  }
+  if (!activeOrganizationId) return <WorkspaceEmptyState returnTo="/teams" />;
+  if (!canRead) {
+    return (
+      <AccessDenied description="Your workspace role does not allow workforce records to be viewed." />
+    );
+  }
+
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const filtered = Boolean(
+    filters.search ||
+      filters.status ||
+      filters.availableOnly ||
+      filters.includeInactive,
+  );
+
+  return (
+    <div className="space-y-6">
+      <section className="flex flex-col gap-5 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
+            Workforce
+          </p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Teams
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+            Manage field people, skills, employment details, and assignment availability for {activeOrganizationDisplayName}.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={refreshAll}
+            className="grid h-11 w-11 place-items-center rounded-xl border border-slate-700 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            aria-label="Refresh team"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </button>
+          {canCreate ? (
+            <Link
+              to="/teams/new"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+            >
+              <UserRoundPlus className="h-4 w-4" /> Add team member
+            </Link>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-3">
+        <MetricCard
+          icon={UsersRound}
+          label="Matching records"
+          value={total}
+          note="Based on the current filters"
+        />
+        <MetricCard
+          icon={UserRoundCheck}
+          label="Active workforce"
+          value={dashboardLoading ? "—" : dashboard?.active_workforce_count ?? "—"}
+          note={canReadDashboard ? "Active operational profiles" : "Dashboard access required"}
+        />
+        <MetricCard
+          icon={UserRoundCheck}
+          label="Available now"
+          value={dashboardLoading ? "—" : dashboard?.available_workforce_count ?? "—"}
+          note={canReadDashboard ? "Ready for assignment" : "Dashboard access required"}
+        />
+      </section>
+
+      <TeamFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={() => setFilters(defaultFilters)}
+      />
+
+      {error ? (
+        <Alert variant="error">
+          {getApiErrorMessage(error, "Unable to load the workforce.")}
+        </Alert>
+      ) : null}
+
+      {loading && items.length === 0 ? (
+        <div className="h-80 animate-pulse rounded-2xl bg-slate-900/60" />
+      ) : items.length === 0 ? (
+        <TeamsEmptyState canCreate={canCreate} filtered={filtered} />
+      ) : (
+        <TeamTable members={items} />
+      )}
+
+      {total > 0 ? (
+        <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/55 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total} team members
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              className="inline-flex h-9 items-center gap-1 rounded-xl border border-slate-700 px-3 font-semibold text-slate-300 transition hover:bg-slate-800 disabled:opacity-40"
+            >
+              <ChevronLeft className="h-4 w-4" /> Previous
+            </button>
+            <span className="px-2">Page {page} of {pageCount}</span>
+            <button
+              type="button"
+              disabled={page >= pageCount || loading}
+              onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
+              className="inline-flex h-9 items-center gap-1 rounded-xl border border-slate-700 px-3 font-semibold text-slate-300 transition hover:bg-slate-800 disabled:opacity-40"
+            >
+              Next <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
