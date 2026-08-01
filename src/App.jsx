@@ -14,11 +14,11 @@ import CustomersPage from "./pages/customers/CustomersPage";
 import EditCustomerPage from "./pages/customers/EditCustomerPage";
 import EditCustomerSitePage from "./pages/customers/EditCustomerSitePage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
-import ModulePage from "./pages/dashboard/ModulePage";
 import AssetDetailsPage from "./pages/equipment/AssetDetailsPage";
 import CreateAssetPage from "./pages/equipment/CreateAssetPage";
 import EditAssetPage from "./pages/equipment/EditAssetPage";
 import EquipmentPage from "./pages/equipment/EquipmentPage";
+import InventoryPage from "./pages/inventory/InventoryPage";
 import CreateJobPage from "./pages/jobs/CreateJobPage";
 import EditJobPage from "./pages/jobs/EditJobPage";
 import JobDetailsPage from "./pages/jobs/JobDetailsPage";
@@ -65,7 +65,7 @@ export default function App() {
             <Route path="/equipment/new" element={<CreateAssetPage />} />
             <Route path="/equipment/:assetId" element={<AssetDetailsPage />} />
             <Route path="/equipment/:assetId/edit" element={<EditAssetPage />} />
-            <Route path="/inventory" element={<ModulePage eyebrow="Materials" title="Inventory" description="Monitor stock, movements, reorder levels, and field consumption." />} />
+            <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/settings" element={<WorkspaceSettingsPage />} />
           </Route>
         </Route>
