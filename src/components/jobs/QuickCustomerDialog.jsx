@@ -8,13 +8,17 @@ import TextField from "../ui/TextField";
 import { createCustomer } from "../../services/organization-service";
 import { getApiErrorMessage, getApiFieldErrors } from "../../utils/api-errors";
 
-const initialValues = {
+const emptyValues = {
   name: "",
   customer_type: "business",
   contact_name: "",
   email: "",
   phone: "",
 };
+
+function createEmptyValues() {
+  return { ...emptyValues };
+}
 
 function optional(value) {
   return value.trim() || null;
@@ -26,7 +30,7 @@ export default function QuickCustomerDialog({
   onClose,
   onCreated,
 }) {
-  const [values, setValues] = useState(initialValues);
+  const [values, setValues] = useState(createEmptyValues);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
@@ -37,11 +41,15 @@ export default function QuickCustomerDialog({
     setError("");
   }
 
-  function close() {
-    if (loading) return;
-    setValues(initialValues);
+  function reset() {
+    setValues(createEmptyValues());
     setError("");
     setFieldErrors({});
+  }
+
+  function close() {
+    if (loading) return;
+    reset();
     onClose();
   }
 
@@ -67,25 +75,23 @@ export default function QuickCustomerDialog({
       });
 
       await onCreated(customer);
-      setValues(initialValues);
+      reset();
       onClose();
     } catch (requestError) {
       setFieldErrors(getApiFieldErrors(requestError));
-      setError(getApiErrorMessage(requestError, "Unable to create the customer."));
+      setError(
+        getApiErrorMessage(requestError, "Unable to create the customer."),
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={close}
-      title="Create customer"
-      description="Add the customer record required by a Novera job without leaving this form. Sites can be added from the customer module later."
-    >
+    <Modal open={open} onClose={close} title="Add customer">
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && <Alert variant="error">{error}</Alert>}
+
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             className="sm:col-span-2"
@@ -97,6 +103,7 @@ export default function QuickCustomerDialog({
             maxLength={160}
             placeholder="Customer or company name"
           />
+
           <SelectField
             label="Customer type"
             value={values.customer_type}
@@ -106,12 +113,14 @@ export default function QuickCustomerDialog({
             <option value="business">Business</option>
             <option value="individual">Individual</option>
           </SelectField>
+
           <TextField
             label="Contact name"
             value={values.contact_name}
             onChange={(event) => update("contact_name", event.target.value)}
             error={fieldErrors.contact_name}
           />
+
           <TextField
             label="Email"
             type="email"
@@ -120,6 +129,7 @@ export default function QuickCustomerDialog({
             error={fieldErrors.email}
             placeholder="Enter email"
           />
+
           <TextField
             label="Phone"
             value={values.phone}
@@ -129,8 +139,12 @@ export default function QuickCustomerDialog({
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="secondary" onClick={close}>Cancel</Button>
-          <Button type="submit" loading={loading}>Create customer</Button>
+          <Button type="button" variant="secondary" onClick={close}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={loading}>
+            Add customer
+          </Button>
         </div>
       </form>
     </Modal>

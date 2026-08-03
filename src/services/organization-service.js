@@ -52,9 +52,18 @@ export function listCustomers(organizationId, parameters = {}, { signal } = {}) 
   );
 }
 
-export function getCustomer(organizationId, customerId, { signal } = {}) {
+export function getCustomer(
+  organizationId,
+  customerId,
+  { includeInactive = true, signal } = {},
+) {
   return apiRequest(
-    organizationPath(organizationId, `/customers/${customerId}`),
+    organizationPath(
+      organizationId,
+      `/customers/${customerId}${buildQuery({
+        include_inactive: includeInactive,
+      })}`,
+    ),
     { signal },
   );
 }
@@ -85,10 +94,15 @@ export function getCustomerSite(
   organizationId,
   customerId,
   siteId,
-  { signal } = {},
+  { includeInactive = true, signal } = {},
 ) {
   return apiRequest(
-    organizationPath(organizationId, `/customers/${customerId}/sites/${siteId}`),
+    organizationPath(
+      organizationId,
+      `/customers/${customerId}/sites/${siteId}${buildQuery({
+        include_inactive: includeInactive,
+      })}`,
+    ),
     { signal },
   );
 }

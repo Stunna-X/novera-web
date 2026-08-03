@@ -91,13 +91,14 @@ function JobList({ title, jobs = [], emptyLabel }) {
             <Link
               key={job.id}
               to={`/jobs/${job.id}`}
-              className="flex flex-col gap-3 px-5 py-4 transition hover:bg-slate-800/20 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+              aria-label={`Open ${job.title}`}
+              className="group flex cursor-pointer flex-col gap-3 px-5 py-4 transition hover:bg-slate-800/35 focus-visible:bg-slate-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-400/50 sm:flex-row sm:items-center sm:justify-between sm:px-6"
             >
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-emerald-300">
                   {job.work_order_number}
                 </p>
-                <p className="mt-1 truncate text-sm font-semibold text-white">
+                <p className="mt-1 truncate text-sm font-semibold text-white transition group-hover:text-emerald-100">
                   {job.title}
                 </p>
               </div>
@@ -106,6 +107,7 @@ function JobList({ title, jobs = [], emptyLabel }) {
                 <span className="rounded-full border border-slate-700 px-2.5 py-1 text-slate-300">
                   {getJobStatusLabel(job.status)}
                 </span>
+                <ArrowUpRight className="h-4 w-4 text-slate-600 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-300" />
               </div>
             </Link>
           ))}
@@ -214,6 +216,7 @@ export default function DashboardPage() {
       detail: "Jobs ready on the calendar",
       icon: CalendarDays,
       tone: "sky",
+          to: "/jobs?status=scheduled",
     },
     {
       label: "In progress",

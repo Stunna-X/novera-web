@@ -1,15 +1,19 @@
 import {
   ArrowLeft,
+  ArrowUpRight,
   CalendarClock,
   CheckCircle2,
   CircleDollarSign,
   Edit3,
   FileText,
+  Mail,
   MapPin,
+  Phone,
   Power,
   RefreshCw,
   Tag,
   Trash2,
+  UserRound,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
@@ -66,6 +70,7 @@ export default function JobDetailsPage() {
   });
   const [customer, setCustomer] = useState(null);
   const [site, setSite] = useState(null);
+  const [customerLoadError, setCustomerLoadError] = useState(false);
   const [activities, setActivities] = useState([]);
   const [activitiesLoading, setActivitiesLoading] = useState(false);
   const [activitiesError, setActivitiesError] = useState(null);
@@ -92,26 +97,47 @@ export default function JobDetailsPage() {
   }, [activeOrganizationId, jobId]);
 
   useEffect(() => {
-    if (!job || !activeOrganizationId) return;
+    if (!job || !activeOrganizationId) return undefined;
+
     let active = true;
 
+    setCustomer(null);
+    setSite(null);
+    setCustomerLoadError(false);
+
     Promise.all([
-      getCustomer(activeOrganizationId, job.customer_id).catch(() => null),
+      getCustomer(
+        activeOrganizationId,
+        job.customer_id,
+        { includeInactive: true },
+      ),
       job.customer_site_id
-        ? getCustomerSite(activeOrganizationId, job.customer_id, job.customer_site_id).catch(() => null)
+        ? getCustomerSite(
+            activeOrganizationId,
+            job.customer_id,
+            job.customer_site_id,
+            { includeInactive: true },
+          ).catch(() => null)
         : Promise.resolve(null),
-    ]).then(([customerPayload, sitePayload]) => {
-      if (active) {
+    ])
+      .then(([customerPayload, sitePayload]) => {
+        if (!active) return;
+
         setCustomer(customerPayload);
         setSite(sitePayload);
-      }
-    });
+      })
+      .catch(() => {
+        if (!active) return;
+
+        setCustomer(null);
+        setSite(null);
+        setCustomerLoadError(true);
+      });
 
     return () => {
       active = false;
     };
   }, [activeOrganizationId, job]);
-
   useEffect(() => {
     if (job) loadActivities();
   }, [job, loadActivities]);
@@ -128,6 +154,7 @@ export default function JobDetailsPage() {
   const canChangeStatus = hasPermission("work_orders.status");
   const canAssign = hasPermission("work_orders.assign");
   const canDelete = hasPermission("work_orders.delete");
+  const canReadCustomer = hasPermission("customers.read");
   const currencyCode = resolveWorkspaceCurrency(activeOrganization);
 
   async function handleStatus(payload) {
@@ -211,8 +238,86 @@ export default function JobDetailsPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Detail icon={MapPin} label="Customer and site">
-          <p>{customer?.name || "Customer record"}</p>
-          <p className="mt-1 text-xs font-normal text-slate-500">{site?.name || "No specific site"}</p>
+          <div className="space-y-3">
+            <div>
+              {customer ? (
+                canReadCustomer ? (
+                  <Link
+                    to={`/customers/${job.customer_id}`}
+                    className="group inline-flex max-w-full items-center gap-1.5 font-semibold text-white transition hover:text-emerald-200"
+                  >
+                    <span className="truncate">
+                      {customer.name}
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-emerald-300 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </Link>
+                ) : (
+                  <p className="font-semibold text-white">
+                    {customer.name}
+                  </p>
+                )
+              ) : (
+                <p className="font-semibold text-slate-400">
+                  {customerLoadError
+                    ? "Customer unavailable"
+                    : "Loading customer..."}
+                </p>
+              )}
+
+              <p className="mt-1 text-xs font-normal text-slate-500">
+                {site?.name ||
+                  (job.customer_site_id
+                    ? "Site unavailable"
+                    : "No specific site")}
+              </p>
+
+              {customer?.is_active === false && (
+                <span className="mt-2 inline-flex rounded-full border border-amber-400/20 bg-amber-400/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-200">
+                  Inactive customer
+                </span>
+              )}
+            </div>
+
+            {customer &&
+              (customer.contact_name ||
+                customer.phone ||
+                customer.email) && (
+                <div className="space-y-2 border-t border-slate-800 pt-3">
+                  {customer.contact_name && (
+                    <p className="flex items-center gap-2 text-xs font-normal text-slate-400">
+                      <UserRound className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+                      <span className="truncate">
+                        {customer.contact_name}
+                      </span>
+                    </p>
+                  )}
+
+                  {customer.phone && (
+                    <a
+                      href={`tel:${customer.phone}`}
+                      className="flex items-center gap-2 text-xs font-normal text-slate-400 transition hover:text-emerald-200"
+                    >
+                      <Phone className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+                      <span className="truncate">
+                        {customer.phone}
+                      </span>
+                    </a>
+                  )}
+
+                  {customer.email && (
+                    <a
+                      href={`mailto:${customer.email}`}
+                      className="flex items-center gap-2 text-xs font-normal text-slate-400 transition hover:text-emerald-200"
+                    >
+                      <Mail className="h-3.5 w-3.5 shrink-0 text-slate-600" />
+                      <span className="truncate">
+                        {customer.email}
+                      </span>
+                    </a>
+                  )}
+                </div>
+              )}
+          </div>
         </Detail>
         <Detail icon={CalendarClock} label="Schedule">
           <p>{formatDateTime(job.scheduled_start)}</p>
