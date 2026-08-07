@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import Button from "../ui/Button";
+import { formatCurrency } from "../../utils/currency";
 import {
   MOVEMENT_LABELS,
   RESERVATION_LABELS,
@@ -98,6 +99,7 @@ export function ItemsTable({ items, canUpdate, canDelete, onEdit, onDeactivate, 
             <th className="px-5 py-4 font-medium">Item</th>
             <th className="px-5 py-4 font-medium">Type</th>
             <th className="px-5 py-4 font-medium">Unit</th>
+            <th className="px-5 py-4 font-medium">Unit cost</th>
             <th className="px-5 py-4 font-medium">Low-stock level</th>
             <th className="px-5 py-4 font-medium">Status</th>
             <th className="px-5 py-4 font-medium text-right">Actions</th>
@@ -105,7 +107,7 @@ export function ItemsTable({ items, canUpdate, canDelete, onEdit, onDeactivate, 
         </thead>
         <tbody className="divide-y divide-slate-800">
           {items.length === 0 ? (
-            <EmptyRow colSpan={6} message="No inventory items have been added." />
+            <EmptyRow colSpan={7} message="No inventory items have been added." />
           ) : (
             items.map((item) => (
               <tr key={item.id} className="hover:bg-slate-800/25">
@@ -117,6 +119,12 @@ export function ItemsTable({ items, canUpdate, canDelete, onEdit, onDeactivate, 
                   {String(item.item_type || "other").replaceAll("_", " ")}
                 </td>
                 <td className="px-5 py-4 text-slate-300">{item.unit_of_measure}</td>
+                <td className="px-5 py-4 text-slate-300">
+                  {formatCurrency(
+                    item.default_unit_cost,
+                    item.currency,
+                  )}
+                </td>
                 <td className="px-5 py-4 text-slate-300">
                   {formatQuantity(item.reorder_level, item.unit_of_measure)}
                 </td>

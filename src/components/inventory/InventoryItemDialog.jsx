@@ -16,6 +16,18 @@ import {
 
 const UNIT_OPTIONS = ["each", "bag", "litre", "metre", "kilogram", "tonne", "drum", "box", "roll"];
 
+function normalizeCostInput(value) {
+  const cleaned = String(value ?? "")
+    .replace(/,/g, "")
+    .replace(/[^0-9.]/g, "");
+  const [whole = "", ...fractionParts] = cleaned.split(".");
+  const fraction = fractionParts.join("").slice(0, 4);
+
+  return cleaned.includes(".")
+    ? `${whole}.${fraction}`
+    : whole;
+}
+
 export default function InventoryItemDialog({
   open,
   item,
@@ -29,6 +41,7 @@ export default function InventoryItemDialog({
       name: item?.name || "",
       item_type: item?.item_type || "material",
       unit_of_measure: item?.unit_of_measure || "each",
+      default_unit_cost: String(item?.default_unit_cost ?? "0"),
       reorder_level: item?.reorder_level || "0",
       description: item?.description || "",
     }),
@@ -61,6 +74,7 @@ export default function InventoryItemDialog({
       name: values.name.trim(),
       item_type: values.item_type,
       unit_of_measure: values.unit_of_measure.trim(),
+      default_unit_cost: toApiDecimal(values.default_unit_cost, "0"),
       reorder_level: toApiDecimal(values.reorder_level, "0"),
       description: values.description.trim() || null,
     };
@@ -124,17 +138,37 @@ export default function InventoryItemDialog({
           </SelectField>
         </div>
 
-        <TextField
-          label="Low-stock level"
-          type="text"
-          inputMode="decimal"
-          value={values.reorder_level}
-          error={fieldErrors.reorder_level}
-          hint="Novera alerts the team when available stock reaches this level."
-          onChange={(event) =>
-            setField("reorder_level", normalizeDecimalInput(event.target.value))
-          }
-        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            label={`Unit cost (${item?.currency || currency})`}
+            type="text"
+            inputMode="decimal"
+            value={values.default_unit_cost}
+            error={fieldErrors.default_unit_cost}
+            hint="Used to estimate job shortages and draft purchase requests."
+            onChange={(event) =>
+              setField(
+                "default_unit_cost",
+                normalizeCostInput(event.target.value),
+              )
+            }
+          />
+
+          <TextField
+            label="Low-stock level"
+            type="text"
+            inputMode="decimal"
+            value={values.reorder_level}
+            error={fieldErrors.reorder_level}
+            hint="Novera alerts the team when available stock reaches this level."
+            onChange={(event) =>
+              setField(
+                "reorder_level",
+                normalizeDecimalInput(event.target.value),
+              )
+            }
+          />
+        </div>
 
         <TextAreaField
           label="Description"

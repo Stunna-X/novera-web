@@ -21,6 +21,7 @@ import { Link, useParams } from "react-router";
 import AccessDenied from "../../components/feedback/AccessDenied";
 import JobActivityTimeline from "../../components/jobs/JobActivityTimeline";
 import JobAssignments from "../../components/jobs/JobAssignments";
+import JobMaterialsReadiness from "../../components/jobs/JobMaterialsReadiness";
 import JobPriorityBadge from "../../components/jobs/JobPriorityBadge";
 import JobStatusBadge from "../../components/jobs/JobStatusBadge";
 import StatusChangeDialog from "../../components/jobs/StatusChangeDialog";
@@ -337,6 +338,21 @@ export default function JobDetailsPage() {
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(340px,0.72fr)]">
         <div className="space-y-6">
+          {hasPermission("inventory.read") && (
+            <JobMaterialsReadiness
+              organizationId={activeOrganizationId}
+              job={job}
+              canManage={
+                canUpdate &&
+                hasPermission("inventory.read")
+              }
+              canRequestPurchase={hasPermission(
+                "purchase_requisitions.create",
+              )}
+              currency={currencyCode}
+              onChanged={loadActivities}
+            />
+          )}
           <section className="rounded-3xl border border-slate-800 bg-slate-900/55 p-5 sm:p-6">
             <div className="flex items-center gap-2 text-sm font-semibold text-white"><FileText className="h-4 w-4 text-emerald-300" /> Operational notes</div>
             <dl className="mt-5 space-y-5">
