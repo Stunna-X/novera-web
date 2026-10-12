@@ -29,6 +29,8 @@ import TeamMemberDetailsPage from "./pages/teams/TeamMemberDetailsPage";
 import TeamsPage from "./pages/teams/TeamsPage";
 import WorkspaceSettingsPage from "./pages/workspace/WorkspaceSettingsPage";
 import WorkspaceSetupPage from "./pages/workspace/WorkspaceSetupPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 export default function App() {
   return (
@@ -36,8 +38,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        <Route element={<PublicOnlyRoute />}>
-          <Route element={<AuthLayout />}>
+        <Route element={<AuthLayout />}>
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+          <Route element={<PublicOnlyRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Route>

@@ -67,6 +67,26 @@ export async function registerUser({
   return persistAuthResponse(payload);
 }
 
+export async function requestPasswordReset(email) {
+  return apiRequest("/auth/forgot-password", {
+    method: "POST",
+    auth: false,
+    body: {
+      email: email.trim().toLowerCase(),
+    },
+  });
+}
+
+export async function resetPassword({ token, password }) {
+  return apiRequest("/auth/reset-password", {
+    method: "POST",
+    auth: false,
+    body: {
+      token,
+      password,
+    },
+  });
+}
 export async function refreshUserSession() {
   const payload = await renewSession();
   return persistAuthResponse(payload);
