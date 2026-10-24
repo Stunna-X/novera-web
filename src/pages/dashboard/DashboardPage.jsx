@@ -25,7 +25,7 @@ import useDashboardAnalytics from "../../hooks/useDashboardAnalytics";
 import useWorkspace from "../../hooks/useWorkspace";
 import { formatCurrency } from "../../utils/currency";
 import {
-  formatDateTime,
+  formatDate,
   getJobStatusLabel,
   humanize,
 } from "../../utils/job-utils";
@@ -103,7 +103,7 @@ function JobList({ title, jobs = [], emptyLabel }) {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 text-xs text-slate-500">
-                <span>{formatDateTime(job.scheduled_start || job.actual_end)}</span>
+                <span>{formatDate(job.scheduled_start || job.actual_end)}</span>
                 <span className="rounded-full border border-slate-700 px-2.5 py-1 text-slate-300">
                   {getJobStatusLabel(job.status)}
                 </span>
