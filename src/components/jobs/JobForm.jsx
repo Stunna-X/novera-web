@@ -31,7 +31,6 @@ function createInitialValues(job) {
     title: job?.title || "",
     description: job?.description || "",
     job_type: job?.job_type || "",
-    customer_reference: job?.customer_reference || "",
     priority: job?.priority || "normal",
     scheduled_start: toDateTimeLocalValue(job?.scheduled_start),
     scheduled_end: toDateTimeLocalValue(job?.scheduled_end),
@@ -252,7 +251,6 @@ export default function JobForm({
       title: values.title.trim(),
       description: optionalText(values.description),
       job_type: optionalText(values.job_type),
-      customer_reference: optionalText(values.customer_reference),
       priority: values.priority,
       scheduled_start: toApiDateTime(values.scheduled_start),
       scheduled_end: toApiDateTime(values.scheduled_end),
@@ -477,16 +475,6 @@ export default function JobForm({
                 value={values.job_type}
                 onChange={(event) => update("job_type", event.target.value)}
                 error={fieldErrors.job_type}
-                maxLength={100}
-              />
-
-              <TextField
-                label="Customer reference"
-                value={values.customer_reference}
-                onChange={(event) =>
-                  update("customer_reference", event.target.value)
-                }
-                error={fieldErrors.customer_reference}
                 maxLength={100}
               />
 

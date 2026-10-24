@@ -52,10 +52,16 @@ export function formatDateTime(value) {
 }
 
 export function formatDate(value) {
-  if (!value) return "—";
+  if (!value) return "\u2014";
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
 
 export function toDateTimeLocalValue(value) {

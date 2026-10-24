@@ -39,10 +39,7 @@ import {
 import { getCustomer, getCustomerSite } from "../../services/organization-service";
 import { getApiErrorMessage } from "../../utils/api-errors";
 import { formatCurrency, resolveWorkspaceCurrency } from "../../utils/currency";
-import {
-  formatDateTime,
-  humanize,
-} from "../../utils/job-utils";
+import { formatDate } from "../../utils/job-utils";
 
 function Detail({ icon: Icon, label, children }) {
   return (
@@ -320,12 +317,11 @@ export default function JobDetailsPage() {
           </div>
         </Detail>
         <Detail icon={CalendarClock} label="Schedule">
-          <p>{formatDateTime(job.scheduled_start)}</p>
-          <p className="mt-1 text-xs font-normal text-slate-500">Ends {formatDateTime(job.scheduled_end)}</p>
+          <p>{formatDate(job.scheduled_start)}</p>
+          <p className="mt-1 text-xs font-normal text-slate-500">Ends {formatDate(job.scheduled_end)}</p>
         </Detail>
         <Detail icon={Tag} label="Job context">
           <p>{job.job_type || "General field work"}</p>
-          <p className="mt-1 text-xs font-normal text-slate-500">{job.customer_reference || "No customer reference"}</p>
         </Detail>
         <Detail icon={CircleDollarSign} label={`Cost (${currencyCode})`}>
           <p>Estimated {formatCurrency(job.estimated_cost, currencyCode)}</p>

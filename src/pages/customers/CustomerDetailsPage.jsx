@@ -32,7 +32,7 @@ import {
 } from "../../services/customer-service";
 import { listJobs } from "../../services/job-service";
 import { getApiErrorMessage } from "../../utils/api-errors";
-import { formatDateTime } from "../../utils/job-utils";
+import { formatDate, formatDateTime } from "../../utils/job-utils";
 
 function addressLines(customer) {
   const first = [customer.address_line_1, customer.address_line_2].filter(Boolean).join(", ");
@@ -262,7 +262,7 @@ export default function CustomerDetailsPage() {
               {jobs.map((job) => (
                 <Link key={job.id} to={`/jobs/${job.id}`} className="flex flex-col gap-2 py-4 transition hover:bg-slate-800/25 sm:flex-row sm:items-center sm:justify-between sm:px-2">
                   <div><p className="font-medium text-white">{job.title}</p><p className="mt-1 text-xs text-slate-500">{job.work_order_number || "Job"} · {job.job_type || "General field work"}</p></div>
-                  <div className="text-left sm:text-right"><p className="text-xs font-semibold capitalize text-slate-300">{String(job.status || "draft").replaceAll("_", " ")}</p><p className="mt-1 text-xs text-slate-600">{job.scheduled_start ? formatDateTime(job.scheduled_start) : "Not scheduled"}</p></div>
+                  <div className="text-left sm:text-right"><p className="text-xs font-semibold capitalize text-slate-300">{String(job.status || "draft").replaceAll("_", " ")}</p><p className="mt-1 text-xs text-slate-600">{job.scheduled_start ? formatDate(job.scheduled_start) : "Not scheduled"}</p></div>
                 </Link>
               ))}
             </div>

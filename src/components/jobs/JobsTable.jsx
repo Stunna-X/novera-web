@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 import JobPriorityBadge from "./JobPriorityBadge";
 import JobStatusBadge from "./JobStatusBadge";
-import { formatDateTime } from "../../utils/job-utils";
+import { formatDate } from "../../utils/job-utils";
 
 function ResourceCounts({ job }) {
   return (
@@ -56,7 +56,7 @@ export default function JobsTable({ jobs }) {
                 <td className="px-5 py-4 text-xs text-slate-400">
                   <span className="inline-flex items-center gap-2">
                     <CalendarClock className="h-4 w-4 text-slate-600" />
-                    {formatDateTime(job.scheduled_start)}
+                    {job.scheduled_start ? formatDate(job.scheduled_start) : "Not scheduled"}
                   </span>
                 </td>
                 <td className="px-5 py-4"><ResourceCounts job={job} /></td>
@@ -90,7 +90,7 @@ export default function JobsTable({ jobs }) {
               <JobStatusBadge status={job.status} />
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-500">{formatDateTime(job.scheduled_start)}</span>
+              <span className="text-xs text-slate-500">{job.scheduled_start ? formatDate(job.scheduled_start) : "Not scheduled"}</span>
               <ResourceCounts job={job} />
             </div>
           </Link>
