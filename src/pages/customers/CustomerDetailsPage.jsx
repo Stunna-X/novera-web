@@ -35,9 +35,9 @@ import { getApiErrorMessage } from "../../utils/api-errors";
 import { formatDate, formatDateTime } from "../../utils/job-utils";
 
 function addressLines(customer) {
-  const first = [customer.address_line_1, customer.address_line_2].filter(Boolean).join(", ");
-  const second = [customer.city, customer.state, customer.postal_code].filter(Boolean).join(", ");
-  return [first, second, customer.country].filter(Boolean);
+  const first = [customer.address_line_1].filter(Boolean).join(", ");
+  const second = [customer.city, customer.state].filter(Boolean).join(", ");
+  return [first, second].filter(Boolean);
 }
 
 export default function CustomerDetailsPage() {
@@ -211,7 +211,7 @@ export default function CustomerDetailsPage() {
               </div>
               <div className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 text-emerald-300" />
-                <div><p className="text-xs uppercase tracking-[0.14em] text-slate-600">Phone</p><p className="mt-1 text-slate-300">{[customer.phone, customer.alternate_phone].filter(Boolean).join(" · ") || "Not recorded"}</p></div>
+                <div><p className="text-xs uppercase tracking-[0.14em] text-slate-600">Phone</p><p className="mt-1 text-slate-300">{customer.phone || "Not recorded"}</p></div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 text-emerald-300" />

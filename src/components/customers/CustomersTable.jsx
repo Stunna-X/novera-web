@@ -5,7 +5,7 @@ import CustomerStatusBadge from "./CustomerStatusBadge";
 import CustomerTypeBadge from "./CustomerTypeBadge";
 
 function customerLocation(customer) {
-  return [customer.city, customer.state, customer.country].filter(Boolean).join(", ");
+  return [customer.city, customer.state].filter(Boolean).join(", ");
 }
 
 export default function CustomersTable({ customers }) {
