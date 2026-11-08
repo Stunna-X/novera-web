@@ -164,7 +164,7 @@ export default function CustomerForm({
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           <TextField
             className="md:col-span-2"
-            label="Address line 1"
+            label="Address"
             value={values.address_line_1}
             onChange={update("address_line_1")}
             error={fieldErrors.address_line_1}
