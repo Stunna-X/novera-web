@@ -13,13 +13,9 @@ const emptyValues = {
   contact_name: "",
   email: "",
   phone: "",
-  alternate_phone: "",
   address_line_1: "",
-  address_line_2: "",
   city: "",
   state: "",
-  postal_code: "",
-  country: "",
   notes: "",
 };
 
@@ -96,7 +92,9 @@ export default function CustomerForm({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
             Customer identity
           </p>
-          <h2 className="mt-2 text-lg font-semibold text-white">Account and primary contact</h2>
+          <h2 className="mt-2 text-lg font-semibold text-white">
+            Account and primary contact
+          </h2>
           <p className="mt-2 text-sm text-slate-500">
             Record the customer name and the person your operations team should contact.
           </p>
@@ -147,15 +145,6 @@ export default function CustomerForm({
             placeholder="Primary phone number"
             maxLength={50}
           />
-          <TextField
-            label="Alternate phone"
-            type="tel"
-            value={values.alternate_phone}
-            onChange={update("alternate_phone")}
-            error={fieldErrors.alternate_phone}
-            placeholder="Optional second number"
-            maxLength={50}
-          />
         </div>
       </section>
 
@@ -164,7 +153,9 @@ export default function CustomerForm({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
             Address
           </p>
-          <h2 className="mt-2 text-lg font-semibold text-white">Primary customer address</h2>
+          <h2 className="mt-2 text-lg font-semibold text-white">
+            Primary customer address
+          </h2>
           <p className="mt-2 text-sm text-slate-500">
             This is the customer account address. Individual operational sites are managed separately.
           </p>
@@ -181,18 +172,19 @@ export default function CustomerForm({
             maxLength={255}
           />
           <TextField
-            className="md:col-span-2"
-            label="Address line 2"
-            value={values.address_line_2}
-            onChange={update("address_line_2")}
-            error={fieldErrors.address_line_2}
-            placeholder="Suite, unit, landmark, or district"
-            maxLength={255}
+            label="City"
+            value={values.city}
+            onChange={update("city")}
+            error={fieldErrors.city}
+            maxLength={100}
           />
-          <TextField label="City" value={values.city} onChange={update("city")} error={fieldErrors.city} maxLength={100} />
-          <TextField label="State or region" value={values.state} onChange={update("state")} error={fieldErrors.state} maxLength={100} />
-          <TextField label="Postal code" value={values.postal_code} onChange={update("postal_code")} error={fieldErrors.postal_code} maxLength={30} />
-          <TextField label="Country" value={values.country} onChange={update("country")} error={fieldErrors.country} maxLength={100} />
+          <TextField
+            label="State or region"
+            value={values.state}
+            onChange={update("state")}
+            error={fieldErrors.state}
+            maxLength={100}
+          />
         </div>
       </section>
 
